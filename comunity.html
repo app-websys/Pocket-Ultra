@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>comunity</title>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-analytics.js";
+    import { getDatabase, ref, get, onValue, onChildAdded } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCUrA6RDOy27mAeagvRSWoNjYbKkHX15lA",
+      authDomain: "testeccdode.firebaseapp.com",
+      databaseURL: "https://testeccdode-default-rtdb.firebaseio.com",
+      projectId: "testeccdode",
+      storageBucket: "testeccdode.firebasestorage.app",
+      messagingSenderId: "461719826236",
+      appId: "1:461719826236:web:6addc4561470eec8b63839",
+      measurementId: "G-JCD2EL4MTM"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const database = getDatabase(app);
+    const auth = getAuth(app);
+window.fetchAllProjects = function() {
+  const projectsRef = ref(database, "projects");
+
+  onValue(projectsRef, snapshot => {
+    const container = document.getElementById('projectsContainer');
+
+    // Oculta o texto de carregamento
+    container.innerHTML = "";
+
+    if (snapshot.exists()) {
+      snapshot.forEach(childSnapshot => {
+        const project = childSnapshot.val();
+        project.id = childSnapshot.key; // Captura o ID do projeto
+
+        // Cria o elemento para o projeto
+        const projectDiv = document.createElement('div');
+        projectDiv.className = 'project';
+        projectDiv.style.flex = '0 0 auto';
+        projectDiv.style.margin = '0px';
+        projectDiv.style.padding = '10px';
+        projectDiv.style.borderRadius = '10px';
+        projectDiv.style.backgroundColor = 'rgba(0,0,0,0.5)';
+        projectDiv.style.cursor = 'pointer';
+
+        // Adiciona evento de clique para redirecionar para a página do projeto
+        projectDiv.onclick = () => {
+          window.location.href = `project.html?id=${project.id}`;
+        };
+
+        // Verifica se a src da imagem está definida
+        let projectImage = project.image && project.image.trim() !== "" ? project.image : 'scripts/pocketUltra.png';
+
+        projectDiv.innerHTML = `
+          <img id="${project.id}" class="projectsImage" src="${projectImage}">
+        `;
+        container.appendChild(projectDiv);
+      });
+    } else {
+      container.innerHTML = "<p>Nenhum projeto encontrado.</p>";
+    }
+  });
+
+  // Configura o listener para adicionar novos projetos automaticamente
+  onChildAdded(projectsRef, snapshot => {
+    const project = snapshot.val();
+    project.id = snapshot.key;
+
+    const container = document.getElementById('projectsContainer');
+    const projectDiv = document.createElement('div');
+    projectDiv.className = 'project';
+    projectDiv.style.flex = '0 0 auto';
+    projectDiv.style.margin = '0px';
+    projectDiv.style.padding = '10px';
+    projectDiv.style.borderRadius = '10px';
+    projectDiv.style.backgroundColor = 'rgba(0,0,0,0.5)';
+    projectDiv.style.cursor = 'pointer';
+
+    projectDiv.onclick = () => {
+      window.location.href = `project.html?id=${project.id}`;
+    };
+
+    // Verifica se a src da imagem está definida
+    let projectImage = project.image && project.image.trim() !== "" ? project.image : 'scripts/pocketUltra.png';
+
+    projectDiv.innerHTML = `
+      <img id="${project.id}" class="projectsImage" src="${projectImage}">
+    `;
+    container.appendChild(projectDiv);
+  });
+};
+
+window.fetchRandomProjects = function() {
+  const projectsRef = ref(database, "projects");
+
+  onValue(projectsRef, snapshot => {
+    const container = document.getElementById('RandomProjectsContainer');
+    container.innerHTML = "";
+
+    if (snapshot.exists()) {
+      const projectsArray = [];
+      snapshot.forEach(childSnapshot => {
+        const project = childSnapshot.val();
+        project.id = childSnapshot.key;
+        projectsArray.push(project);
+      });
+
+      // Pega 15 projetos aleatórios
+      const randomProjects = projectsArray.sort(() => 0.5 - Math.random()).slice(0, 15);
+
+      randomProjects.forEach(project => {
+        const projectDiv = document.createElement('div');
+        projectDiv.className = 'project';
+        projectDiv.style.flex = '0 0 auto';
+        projectDiv.style.margin = '0px';
+        projectDiv.style.padding = '10px';
+        projectDiv.style.borderRadius = '10px';
+        projectDiv.style.backgroundColor = 'rgba(0,0,0,0.5)';
+        projectDiv.style.cursor = 'pointer';
+
+        projectDiv.onclick = () => {
+          window.location.href = `project.html?id=${project.id}`;
+        };
+
+        const projectImage = project.image ? project.image : 'scripts/pocketUltra.png';
+
+        projectDiv.innerHTML = `
+          <img class="projectsImage" src="${projectImage}">
+        `;
+        container.appendChild(projectDiv);
+      });
+    } else {
+      container.innerHTML = "<p>Nenhum projeto encontrado.</p>";
+    }
+  });
+
+  // Configura o listener para adicionar novos projetos automaticamente
+  
+};
+
+window.fetchMoreProjects = function() {
+  const projectsRef = ref(database, "projects");
+
+  onValue(projectsRef, snapshot => {
+    const container = document.getElementById('projectsDowloadsContainer');
+    container.innerHTML = "";
+
+    if (snapshot.exists()) {
+      const projectsArray = [];
+      snapshot.forEach(childSnapshot => {
+        const project = childSnapshot.val();
+        project.id = childSnapshot.key;
+        projectsArray.push(project);
+      });
+
+      // Ordena os projetos por downloads em ordem decrescente
+      const sortedProjects = projectsArray.sort((a, b) => b.dowloads - a.dowloads).slice(0, 10); // Pegando os 10 primeiros
+
+      sortedProjects.forEach((project, index) => {
+        const projectDiv = document.createElement('div');
+        projectDiv.className = 'project';
+        projectDiv.style.flex = '0 0 auto';
+        projectDiv.style.margin = '0px';
+        projectDiv.style.padding = '10px';
+        projectDiv.style.borderRadius = '10px';
+        projectDiv.style.backgroundColor = 'rgba(0,0,0,0.5)';
+        projectDiv.style.cursor = 'pointer';
+
+        projectDiv.onclick = () => {
+          window.location.href = `project.html?id=${project.id}`;
+        };
+
+        const projectImage = project.image ? project.image : 'scripts/pocketUltra.png';
+
+        projectDiv.innerHTML = `
+          <img class="projectsImage" src="${projectImage}">
+          <p>Posição: ${index + 1}</p>
+        `;
+        container.appendChild(projectDiv);
+      });
+    } else {
+      container.innerHTML = "<p>Nenhum projeto encontrado.</p>";
+    }
+  });
+
+  // Configura o listener para adicionar novos projetos automaticamente
+  
+};
+
+
+
+    // Função para redirecionar para o perfil
+    function redirectToProfile() {
+      const user = auth.currentUser;
+      if (user) {
+        window.location.href = `profile.html?id=${user.uid}`;
+      } else {
+        alert("Você não está logado para ir ao perfil!");
+      }
+    }
+
+    // Função para verificar o estado de autenticação
+    function checkAuthState() {
+      const loginButton = document.querySelector("#menu button[onclick*='login.html']");
+      const logoutButton = document.querySelector("#menu button[onclick*='signOutUser()']");
+
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          // Usuário logado: esconde botão de login e mostra o de logout
+          if (loginButton) loginButton.style.display = "none";
+          if (logoutButton) logoutButton.style.display = "block";
+        } else {
+          // Usuário não logado: mostra botão de login e esconde o de logout
+          if (loginButton) loginButton.style.display = "block";
+          if (logoutButton) logoutButton.style.display = "none";
+        }
+      });
+    }
+
+    // Função para realizar logout
+    window.signOutUser = async function() {
+  try {
+    await signOut(auth);
+    alert("Você saiu da sua conta com sucesso!");
+    window.location.href = "login.html"; // Redireciona para a página de login após logout
+  } catch (error) {
+    alert("Erro ao sair da conta: " + error.message);
+  }
+};
+
+    // Chamar a função ao carregar a página
+    checkAuthState();
+    
+document.getElementById('profile').addEventListener('click', () => {
+ redirectToProfile();
+   console.log("clicked");
+    });
+    
+    window.onload = function() {
+      checkAuthState();
+  fetchAllProjects(); // Carrega os detalhes do projeto
+  // Prepara o link para download
+  fetchRandomProjects();
+  fetchMoreProjects();
+};
+  </script>
+
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      margin: 20px;
+    }
+    body {
+      background: linear-gradient(to bottom,ghostwhite,lightgray);
+      transition:0.5s;
+
+      width: 97vw; /* Toda a largura da viewport */
+      height: 100vh; /* Toda a altura da viewport */
+      fil
+    }
+    #content {
+      z-index:0;
+    }
+    .button { 
+      padding: 0px 15px;
+      background-color: #5865F2; 
+      color: white;
+      border: none; 
+      border-radius: 3px;
+      cursor: pointer; 
+    }
+    .button:hover {
+      background-color: #4752c4; 
+    }
+    h1 { 
+      margin-bottom: 20px;
+    }
+    #projectsContainer {
+      display: flex;
+      overflow-x: auto;
+      gap: 5px;
+    }
+    #RandomProjectsContainer {
+      display: flex;
+      overflow-x: auto;
+      gap: 5px;
+    }
+    #projectsDowloadsContainer {
+      display: flex;
+      overflow-x: auto;
+      gap: 5px;
+    }
+    .project {
+      width: 100px;
+      height:100px;
+    }
+    .projectsImage {
+      width:100px;
+      height:100px;
+      border-radius:10px;
+      background-color: transparent;
+    }
+    #menu {
+      transition: 1s ;
+      display:fixed;
+      background:white;
+      position:fixed;
+      height:97%;
+      width:300px;
+      transform: translateX(-110%);
+      z-index:1000;
+    }
+    #menu .button {
+      background:transparent;
+      width:100%;
+      height:50px;
+      font-size:25px;
+      color:black;
+      display:;
+    }
+    #menu #X {
+      position:relative;
+      left:85%; 
+      font-size:30px;
+      top:-100px;
+    }
+    #menu img {
+      position:relative;
+      left:15%;
+    }
+    #menu h2 {
+      position:relative;
+      left:100px;
+    }
+    #headx {
+      display:fixed;
+      width:100vw;
+      height: 50px;
+      position: fixed;
+      background-color: #002B3B;
+      color:white;
+      bottom: 96%;
+      right:-3px;
+      margin:auto;
+      z-index:3;
+    }
+    #headx label {
+      color: white;
+      position: relative;
+      left: 27px;
+      top:7px;
+      font-weight: bold;
+      font-size: 22px;
+    }
+    #headx img {
+      width: 40px;
+      border-radius: 5px;
+      position: relative;
+      top: 14px;
+      left: 20px;
+    }
+    #headx #menuButton {
+      position:relative;
+      left:15px;
+      top:10px;
+      background:transparent;
+      border:none;
+      font-size: 25px;
+      color:white;
+    }
+    #news {
+      
+      width:90%;
+      height:150px;
+      background-color:rgba(0,0,0,0.5);
+      
+      overflow-x: auto;
+      overflow-y: hidden;
+      align-content:center;
+      justify-self: center;
+      position:relative;
+      top:45px;
+        display: flex;
+      
+      box-shadow: 0px 0px 9px black;
+     
+    }
+    #news .newsC {
+      background-color: transparent;
+      border:3px solid dimgray;
+    display:flex;
+gap:10px;
+    }
+    #refresh {
+      position:fixed;
+      bottom:95%;
+      z-index:2;
+    }
+    #searchInput {
+      
+    }
+    #searchButton {
+      position:absolute;
+      left:93%;
+      top:10px;
+    }
+   #headx .nextUpdate {
+      display:none;
+    }
+  </style>
+</head>
+<body>
+  <div id="headx">
+    <button id="menuButton" onclick="menu()">☰</button>
+    <label>catroweb comunity</label>
+  <div class="nextUpdate">  
+  <input id="searchInput" type="text" placeholder="project name">
+    <button id="searchButton">⌕</button>
+    </div>
+  </div>
+  <div id=".">
+    <button class="button" id="refresh" onclick="fetchAllProjects(); fetchRandomProjects(); FetchDownloadsProjects();">Refresh</button>
+  </div>
+  <div id="menuBG">
+    <div id="menu">
+      <button onClick="MenuHidden()" id="X">X</button>
+      <img src="UltraWeb.png" width="150px">
+      <h2>CatroWeb</h2>
+      <button class="button">notifications</button>
+      <button class="button" id="profile" onclick="alert('profile are not ready">My Profile</button>
+      <button class="button">followers</button>
+      <button class="button" onClick="alert('Toturials are not ready');">Toturials</button>
+      <button class="button" onclick="window.location.href='login.html?comunity'">Login</button>
+  <button class="button" onclick="signOutUser()">Log Out</button>
+    </div>
+  </div>
+  <div id="content">
+  <div id="news">
+    <div class="newsC">
+      <img id="image1" src="1.0_Avaliable.png" width="100%" height="200px" >
+    
+      <img id="image2" src="1.0_Avaliable.png" width="100%" height="200px" >
+ </div>
+    </div>
+    <br>
+    <br>
+    <br>
+    <h1 id="lp">novos Projetos</h1>
+    <div id="projectsContainer">loading...</div>
+    <h1 > Projetos aleatórios</h1>
+    <div id="RandomProjectsContainer">loading</div>
+    <h1> mais Dowloads</h1>
+    <div id="projectsDowloadsContainer">loading...</div>
+  </div>
+  
+  <div id='notConnected'>
+    <h1>the device is not connected to wifi or mobile data...</h1>
+  </div>
+  <script>
+    function goToAddProject() {
+      window.location.href = "addProject.html";
+    }
+
+    // Chamar fetchAllProjects ao carregar a página
+    function menu() {
+      document.getElementById('menu').style.transform = "translateX(-20%)";
+    }
+    function MenuHidden() {
+      document.getElementById('menu').style.transform = "translateX(-110%)";
+    }
+    function search() {
+  const search = document.getElementById('searchInput');
+
+  if (search.style.display === "block") {
+    if (search.value.trim() !== "") {
+      window.location.href = `search.html?search=${encodeURIComponent(search.value)}`;
+    } else {
+      alert("Digite algo para buscar!");
+    }
+  } else {
+    search.style.display = "block";
+    console.log("Campo de busca exibido.");
+  }
+}
+  </script>
+</body>
+</html>
+<script>
+function verificarTipoConexao() {
+  if ("connection" in navigator) {
+    const connection = navigator.connection;
+    const tipoConexao = connection.effectiveType;
+const contentWifi = document.getElementById('notConnected');
+    if (navigator.onLine) {
+      switch (tipoConexao) {
+        case "wifi":
+          console.log("O dispositivo está conectado ao Wi-Fi.");
+          // Ação para Wi-Fi
+      contentWifi.style.display = "none";
+          break;
+        case "5g":
+          console.log("O dispositivo está conectado ao 5G.");
+          // Ação para 5G
+      contentWifi.style.display = "none";
+          break;
+        case "4g":
+          console.log("O dispositivo está conectado ao 4G.");
+          // Ação para 4G
+      contentWifi.style.display = "none";
+          break;
+        case "3g":
+          console.log("O dispositivo está conectado ao 3G.");
+          // Ação para 3G
+      contentWifi.style.display = "none";
+          break;
+        case "2g":
+          console.log("O dispositivo está conectado ao 2G.");
+          // Ação para 2G
+              
+      contentWifi.style.display = "none";
+          break;
+        default:
+          console.log("Conexão desconhecida ou mais lenta.");
+          // Ação para conexões desconhecidas ou lentas
+          break;
+      }
+    } else {
+      console.log("O dispositivo não está conectado à internet.");
+      // Ação para offline
+      const content = document.getElementById('content');
+      content.style.display = "none";
+      
+      contentWifi.style.display = "block";
+    }
+  } else {
+    console.log("API Network Information não é suportada neste navegador.");
+    // Ação alternativa para navegadores que não suportam a API
+  }
+}
+
+// Chama a função para verificar a conexão
+verificarTipoConexao();
+</script>

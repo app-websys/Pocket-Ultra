@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .tab { cursor: pointer; padding: 10px 20px; display: inline-block; background-color: #ddd; margin-right: 5px; }
+    .tab.active { background-color: #5865F2; color: white; }
+    .content { margin-top: 20px; }
+    .hidden { display: none; }
+  
+  </style>
+</head>
+<body>
+  <h1>Perfil de <span id="profileName"></span></h1>
+  <button class="button" onclick="followUser()">Seguir</button>
+
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('projects')">Projetos</div>
+    <div class="tab" onclick="showTab('following')">Seguindo</div>
+    <div class="tab" onclick="showTab('followers')">Seguidores</div>
+  </div>
+
+  <div id="projects" class="content"></div>
+  <div id="following" class="content hidden"></div>
+  <div id="followers" class="content hidden"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-auth.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-database.js";
+
+    const firebaseConfig = {
+    apiKey: "AIzaSyCUrA6RDOy27mAeagvRSWoNjYbKkHX15lA",
+    authDomain: "testeccdode.firebaseapp.com",
+    databaseURL: "https://testeccdode-default-rtdb.firebaseio.com",
+    projectId: "testeccdode",
+    storageBucket: "testeccdode.firebasestorage.app",
+    messagingSenderId: "461719826236",
+    appId: "1:461719826236:web:6addc4561470eec8b63839",
+    measurementId: "G-JCD2EL4MTM"
+  };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+
+    // Função para carregar perfil
+    async function loadProfile() {
+      const query = new URLSearchParams(window.location.search);
+      const urlUid = query.get("id");
+
+      if (urlUid) {
+        // Carregar perfil pelo ID da URL
+        await fetchProfileByUid(urlUid);
+      } else {
+        // Caso não tenha ID na URL, carregar o perfil autenticado
+        onAuthStateChanged(auth, async (user) => {
+          if (user) {
+            await fetchProfileByUid(user.uid); // UID do usuário autenticado
+          } else {
+            console.error("Nenhum usuário autenticado.");
+            document.getElementById("profileName").textContent = "Usuário não autenticado";
+          }
+        });
+      }
+    }
+
+    // Função para buscar o perfil no Firebase Authentication usando UID
+    async function fetchProfileByUid(uid) {
+      const database = getDatabase(app);
+      const userRef = ref(database, `users/${uid}/username`);
+      const userVeriRef = ref(database, `users/${uid}/verified`);
+
+      try {
+        const snapshot = await get(userRef);
+        const verSnap = await get(userVeriRef);
+
+        if (snapshot.exists() && verSnap.exists()) {
+          const userName = snapshot.val();
+          const userVeri = verSnap.val();
+
+          // Verificar se o perfil está verificado
+          const displayName = userVeri === "yes" ? `${userName} ✓` : userName || "Usuário";
+          document.getElementById("profileName").textContent = displayName;
+        } else {
+          console.error("Perfil não encontrado na database para UID:", uid);
+          document.getElementById("profileName").textContent = "Usuário Desconhecido";
+        }
+      } catch (error) {
+        console.error("Erro ao buscar perfil:", error);
+        document.getElementById("profileName").textContent = "Erro ao carregar perfil";
+      }
+    }
+
+    window.onload = loadProfile;
+  </script>
+</body>
+</html>

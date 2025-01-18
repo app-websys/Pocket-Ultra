@@ -1,0 +1,37 @@
+
+body {
+  background: linear-gradient(to bottom,#00475E,#002B3B);
+    width: 97vw; /* Toda a largura da viewport */
+    height: 100vh; /* Toda a altura da viewport */
+    
+
+}
+#headx {
+  display:normal;
+  position:fixed;
+  width:102%;
+  height:60px;
+  background-color: #002B3B;
+  top:0;
+  top:-9px;
+  left:-4px;
+  
+}
+  #headx  label {
+    color:white;
+    position:relative;
+    top:0;
+    left:27px;
+    top:-px;
+    margin:auto;
+    font-weight: bold;
+    font-size:22px;
+  }
+  #headx img {
+        width: 40px;
+        border-radius: 5px;
+        position:relative;
+        top:14px;
+        left:20px;
+  }
+  

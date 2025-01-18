@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Details</title>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
+    import { getDatabase, ref, get,set, onValue } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCUrA6RDOy27mAeagvRSWoNjYbKkHX15lA",
+      authDomain: "testeccdode.firebaseapp.com",
+      databaseURL: "https://testeccdode-default-rtdb.firebaseio.com",
+      projectId: "testeccdode",
+      storageBucket: "testeccdode.firebasestorage.app",
+      messagingSenderId: "461719826236",
+      appId: "1:461719826236:web:6addc4561470eec8b63839",
+      measurementId: "G-JCD2EL4MTM"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+
+    // Função para buscar os detalhes do projeto
+    window.fetchProjectDetails = function () {
+      const urlParams = new URLSearchParams(window.location.search);
+      const projectId = urlParams.get('id');
+
+      console.log("ID do projeto:", projectId); // Verifica o ID do projeto
+
+      if (!projectId) {
+        alert("Nenhum ID de projeto encontrado na URL.");
+        window.location.href = "index.html";
+        return;
+        
+      }
+
+      const projectRef = ref(database, `projects/${projectId}`);
+      const container = document.getElementById('projectDetails');
+      const projectNameElement = document.getElementById('projectName');
+
+      onValue(projectRef, (snapshot) => {
+        if (snapshot.exists()) {
+          const project = snapshot.val();
+
+          console.log("Projeto encontrado:", project); // Verifica os dados do projeto
+
+          
+
+          container.innerHTML = `
+            <div class="project-detail">
+            <img src="${project.image}" #id='projectimage' style="border-radius:15px; border:4px solid black; box-shadow:0px 0px 4px blue;" width="200px">
+            <h1>${project.name}</h1>
+            <h3>Description:</h3>
+            <p>${project.desc}</p>
+              <p><strong>Versão:</strong> ${project.version || "Não informado"}</p>
+              <p><strong>Criação:</strong> ${new Date(project.createdAt).toLocaleDateString()}</p>
+              <p><strong>Dowloads:</strong> ${project.dowloads}  </p>
+              
+              
+            </div>
+            
+          `;
+        } else {
+          console.error("Projeto não encontrado no banco de dados.");
+          container.innerHTML = "<p>Projeto não encontrado.</p>";
+        }
+      }, (error) => {
+        console.error("Erro ao acessar o banco de dados:", error);
+        container.innerHTML = "<p>Erro ao carregar o projeto. Tente novamente mais tarde.</p>";
+      });
+    };
+
+    function prepareDownloadLink(projectName, projectScript) {
+      // Cria um objeto Blob com o conteúdo do script
+      const blob = new Blob([projectScript], { type: 'text/plain' });
+
+      // Cria uma URL temporária para o arquivo
+      const url = URL.createObjectURL(blob);
+
+      // Configura o link para download
+      const downloadLink = document.getElementById('downloadCodeLink');
+      downloadLink.href = url;
+      downloadLink.download = `${projectName}.txt`; // Nome do arquivo
+      downloadLink.style.display = 'inline-block'; // Exibe o botão
+      window.aumentarDownloads
+    }
+
+    // Função para aumentar os downloads
+    async function aumentarDownloads() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const projectId = urlParams.get('id'); // Obtém o ID do projeto da URL
+
+  if (!projectId) {
+    console.error("ID do projeto não encontrado.");
+    return;
+  }
+
+  const projectRef = ref(database, `projects/${projectId}/dowloads`); // Referência ao campo "downloads"
+
+  try {
+    // Obtem o valor atual dos downloads
+    const snapshot = await get(projectRef);
+
+    if (snapshot.exists()) {
+      const currentDownloads = snapshot.val() || 0; // Valor atual ou 0 se não existir
+      await set(projectRef, currentDownloads + 1); // Incrementa o valor em 1
+      console.log("Downloads atualizados com sucesso!");
+    } else {
+      console.error("O campo 'downloads' não foi encontrado no banco de dados.");
+    }
+  } catch (error) {
+    console.error("Erro ao aumentar downloads:", error);
+  }
+}
+// Aguarde o DOM estar completamente carregado
+document.addEventListener("DOMContentLoaded", function() {
+  // Seleciona o elemento <a> pelo ID
+  const downloadLink = document.getElementById("downloadCodeLink");
+
+  // Adiciona o evento de clique para chamar a função aumentarDownloads
+  downloadLink.addEventListener("click", function(event) {
+    aumentarDownloads(); // Chama a função para aumentar os downloads
+  });
+});
+    // Modifique o onload para chamar ambas as funções
+    window.onload = function() {
+      fetchProjectDetails(); // Carrega os detalhes do projeto
+      prepareDownloadLink(); // Prepara o link para download
+    };
+  </script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    .button {
+      padding: 10px 20px;
+      background-color: #5865F2;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .button:hover {
+      background-color: #4752c4;
+    }
+    .project-detail {
+      margin-bottom: 10px;
+    }
+    
+    a {
+      text-decoration: none;
+    }
+  #projectimage {
+    background-color: rgba(0,0,0,0.5);
+    border-radius: 25px;
+    border: 2px solid black;
+  }
+  </style>
+</head>
+<body>
+  <h1 id="projectName">Carregando...</h1>
+  <div id="projectDetails"></div>
+  <button class="button" onclick="window.history.back()">Voltar</button>
+  <button class="button" onclick="fetchProjectDetails()">Refresh</button>
+  <a id="downloadCodeLink" target="_blank" class="button" style="font-size:14px;">Baixar Código</a>
+</body>
+</html>

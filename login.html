@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+    input { padding: 10px; margin: 10px 0; width: 300px; }
+    .button { padding: 10px 20px; background-color: #5865F2; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    .button:hover { background-color: #4752c4; }
+  </style>
+</head>
+<body>
+  <h1>Sistema de Login</h1>
+
+  <div id="loginDiv">
+    <h2>Login</h2>
+    <input type="email" id="loginEmail" placeholder="Email"><br>
+    <input type="password" id="loginPassword" placeholder="Senha"><br>
+    <button class="button" id="loginButton">Entrar</button>
+    <p>Não tem uma conta? <span onclick="toggleForm()">Cadastre-se</span></p>
+  </div>
+
+  <div id="registerDiv" style="display:none;">
+    <h2>Cadastro</h2>
+    <input type="text" id="registerUsername" placeholder="Nome de Usuário"><br>
+    <input type="email" id="registerEmail" placeholder="Email"><br>
+    <input type="password" id="registerPassword" placeholder="Senha"><br>
+    <button class="button" id="RegisterButton">Cadastrar</button>
+    <p>Já tem uma conta? <span onclick="toggleForm()">Entrar</span></p>
+  </div>
+
+  <script type="module">
+    // Importar Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-auth.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-database.js";
+
+    // Configuração do Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyCUrA6RDOy27mAeagvRSWoNjYbKkHX15lA",
+      authDomain: "testeccdode.firebaseapp.com",
+      databaseURL: "https://testeccdode-default-rtdb.firebaseio.com",
+      projectId: "testeccdode",
+      storageBucket: "testeccdode.firebasestorage.app",
+      messagingSenderId: "461719826236",
+      appId: "1:461719826236:web:6addc4561470eec8b63839",
+      measurementId: "G-JCD2EL4MTM"
+    };
+
+  const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const database = getDatabase(app);
+
+    // Alternar entre login e cadastro
+    
+
+    // Cadastro de usuário
+    // Cadastro de usuário
+// Cadastro de usuário
+// Cadastro de usuário
+// Cadastro de usuário // Obtendo a instância da base de dados
+
+// Referência base para "users"
+const usersRef = ref(database, "users");
+
+// Referência base para "projects"
+
+async function handleRegister() {
+  const username = document.getElementById("registerUsername").value;
+  const email = document.getElementById("registerEmail").value;
+  const password = document.getElementById("registerPassword").value;
+
+  if (!username.trim()) {
+    alert("Por favor, insira um nome de usuário.");
+    return;
+  }
+
+  try {
+    // Criação do usuário com email e senha
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const userId = userCredential.user.uid;
+
+    // Salvando o usuário no caminho `users/{userId}`
+    await set(ref(database, `users/${userId}`), {
+      verified: 'no',
+      followers: 0,
+      following: 0,
+      username: username,
+      email: email,
+      password:password,
+    });
+
+    alert("Usuário registrado com sucesso!");
+
+    // Redireciona para a página correta com base no domínio
+    if (window.location.href.includes("comunity")) {
+      window.location.href = "comunity.html";
+    } else {
+      window.location.href = "home.html";
+    }
+  } catch (error) {
+    alert("Erro no cadastro: " + error.message);
+  }
+}
+
+// Login do usuário
+async function handleLogin() {
+  const email = document.getElementById("loginEmail").value;
+  const password = document.getElementById("loginPassword").value;
+
+  try {
+    await signInWithEmailAndPassword(auth,email, password);
+    alert("Login realizado com sucesso!");
+
+    // Redireciona baseado no domínio atual
+    if (window.location.href.includes("comunity")) {
+      window.location.href = "index.html";
+    } else {
+      window.location.href = "home.html";
+    }
+  } catch (error) {
+    alert("Erro ao fazer login: " + error.message);
+  }
+}
+
+// Redirecionar usuário logado automaticamente
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    if (window.location.href.includes("comunity")) {
+      window.location.href = "index.html";
+    } else {
+      window.location.href = "home.html";
+    }
+  }
+});
+
+    // Adicionar evento de clique aos botões
+    document.getElementById('loginButton').addEventListener('click', handleLogin);
+    document.getElementById('RegisterButton').addEventListener('click', handleRegister);
+  </script>
+  <script>
+    function toggleForm() {
+      const loginDiv = document.getElementById("loginDiv");
+      const registerDiv = document.getElementById("registerDiv");
+
+      loginDiv.style.display = loginDiv.style.display === "none" ? "block" : "none";
+      registerDiv.style.display = registerDiv.style.display === "none" ? "block" : "none";
+    }
+  </script>
+</body>
+</html>

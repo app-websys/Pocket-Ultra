@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Menu pocket ultra</title>
+</head>
+<content>
+<body>
+  <div id="content">
+  <div id="game-image">
+    <img id="game-icon" onclick="EditProject('hello','html')" src="template_game.png" >
+    
+  </div>
+  <div id="headx">
+    <img src="pocketultra.png">
+    <link rel="stylesheet" href="home.css">
+    <label> 
+    
+    Pocket Ultra
+    <button id="about" style=" background:transparent; border:none;"> <img src="about.png" > </button>
+    <button id="config" style=" background:transparent; border:none;"> <img src="config.png" id="configic"> </button>
+    </label>
+  </div>
+  
+  <div id="menu">
+    <img src="config.png" width="23px">
+    <p>★</p>
+    <button onclick="Redirect('https://play.google.com/store/apps/details?id=org.catrobat.catroid')"> avalie-nos!</button>
+    <button onclick="terms()">termos de Uso e serviço</button>
+    <button onclick="Redirect('https://catrob.at/privacypolicy')">politica de privacidade</button>
+    <button onclick="about()">sobre este aplicativo</button>
+    <button onclick="config()">configurações</button>
+      <button class="button" onclick="window.location.href='login.html'">Login</button>
+  <button class="button" onclick="signOutUser()">Log Out</button>
+  </div>
+
+  <div id="projetos">
+    <h1>Projetos       
+    </h1>
+<div id="projects">
+
+</div>
+  </div>
+  <div id="comunity">
+    <h1 onClick="window.location.href = 'comunity.html' ">comunity ></h1>
+    <button style="background:none; border:none;"><img src="discord.png" style="width:100px; border-radius:25px;" onClick="alert('discord server in development')"></button>
+  </div>
+  <div id="beta">
+  <input type="file" id="importarArquivo" accept=".catrobat" />
+  <button onclick="importarDoArquivo()">Importar Projeto</button>
+  </div>
+<button id="create" onclick="ClicktoCreate()">+</button>
+<div id="createBG">
+<div id="createDiv">
+  
+  <h1>Create Project</h1>
+  
+  <p>Project Name</p>
+  <input type="text" id="name" placeholder="Project Name">
+  <p>Rotation</p>
+  <div class="rotate">
+  <img src="phone.png" width="50px"><input type="checkbox" name="Vertical" id="vertical" onClick="vertical()" checked ></img>
+  <img src="phone.png" width="50px" style="transform: rotate(90deg);"><input type="checkbox" name="horizontal" id="Horizontal" onClick="horizontal()"></img>
+  </div>
+ <div class="button">
+  <button onclick="LeaveMenu()"id="X">X</button>
+  <button onclick="CreateProject()" id="CreateButton">Create Project</button>
+</div>
+</div>
+</div>
+<div id="TermsBG">
+<div id="termsMenu">
+  
+  <h4>Termos de Uso e Serviço </h4>
+ <h6> Para utilizar o Pocket Code e outros executáveis oferecidos pelo projeto Catrobat, é preciso aceitar nossos Termos de Uso e segui-los estritamente quando usar o Pocket Code e os outros executáveis. Por favor, visite o link abaixo para encontrar as definições precisas dos Termos de Uso.</h6>
+    <a id="termsofuse" href="https://share.catrob.at/pocketcode/termsOfUse" target="_blank">Termos de Uso e Serviço </a>
+   
+ <button id="termsok" onClick="Leaveterms()">ok</button>
+ 
+</div>
+
+</div>
+  <script src="scroll.js"></script>
+  <script src="export-import.js"></script>
+  <script src="menu.js"></script>
+  <script src="createProject.js"></script>
+  <script src="editProject.js"></script>
+    <script name="redirect">
+    function Redirect(url) {
+
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    url = 'https://' + url;
+  }
+  window.location.href = url;
+}
+    </script>
+</body>
+</div>
+<style>
+
+body {
+  background: linear-gradient(to bottom,#00475E,#002B3B);
+  transition:0.5s;
+  width: 97vw; /* Toda a largura da viewport */
+  height: 100vh; /* Toda a altura da viewport */
+  
+}
+#content {
+    width: 97vw;
+    
+   transform: translateX(900);
+    color: white;
+    font-family: Arial, sans-serif;
+    
+    transition: 1.7s ease-in-out; /* Duração e suavidade da animação */
+    
+   transform-origin: left; /* Ponto de transformação */
+}
+#headx {
+ width:101vw;
+  
+  height: 70px;
+  position: fixed;
+  background-color: #002B3B;
+  top: 0;
+  left: -4px;
+  margin:auto;
+}
+
+#headx label {
+  color: white;
+  position: relative;
+  left: 27px;
+  font-weight: bold;
+  font-size: 22px;
+}
+
+#headx img {
+  width: 40px;
+  border-radius: 5px;
+  position: relative;
+  top: 14px;
+  left: 20px;
+}
+
+#game-image #game-icon {
+  width:102%;
+
+  height:500px;
+  position:;
+  left:0;
+  left:-3px;
+}
+#headx #about {
+  width: 60px;
+  width:80px;
+  position: fixed; /* Fixa o botão em relação à tela */
+  
+  top: 0px; /* Distância do final da tela */
+  right: 100px; /* Distância da borda direita */
+  background: transparent;
+  border: none;
+}
+#headx #config {
+  width: 10px;
+  position: fixed; /* Fixa o botão em relação à tela */
+  
+  top: 0px; /* Distância do final da tela */
+  right: 60px; /* Distância da borda direita */
+  background: transparent;
+  border: none;
+  filter:  invert(1);
+}
+#headx #config img {
+  width: 30px;
+  position:relative;
+  top:18px;
+  left:-9px;
+}
+#menu {
+  /* Define um tamanho fixo ou ajustável */
+  display:none;
+  
+  padding: 15px;
+  transition: 0.2 ease-in-out;
+  opacity:0;
+  position: absolute;
+  top: 10px; /* Ajusta a posição abaixo do botão */
+  right: 10px; /* Ajusta a posição à direita do botão */
+    height:600px;
+  background-color: #333;
+  border-radius: 3px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  color: white;
+  z-index: 10;
+    
+}
+
+    #menu button {
+      display: block;
+      background: none;
+      color: white;
+      border: none;
+      padding: 8px 25px;
+      text-align: right;
+      cursor: pointer;
+      width: 100%;
+      font-size: 20px;
+      border-radius: 3px;
+      margin-left: 25px;
+    }
+  #menu img {
+    position: absolute;
+    top: 65%;
+    left: 10px;
+    filter: invert(1);
+  }
+
+  #menu p {
+    position: absolute;
+    top: 5%;
+    left: 10px;
+    font-size: 25px;
+    margin: 0;
+  }
+
+  #menu {
+    width: 0px; /* Define um tamanho fixo ou ajustável */
+    padding: 15px;
+  }
+  
+  #projetos h1 {
+    color:#A8DFF4;
+  }
+  #projetos {
+    height:200px;
+    width:100%;
+  }
+  #projects {
+  width: 100%; /* Define a largura total para o contêiner */
+  max-height: 170px; /* Define a altura máxima */
+  overflow-x: auto; /* Permite rolagem horizontal */
+  overflow-y: hidden; /* Impede rolagem vertical */
+  white-space: nowrap; /* Garante que os itens fiquem lado a lado */
+  border: none;
+  padding: 10px; /* Adiciona um espaçamento interno */
+  box-sizing: border-box; /* Inclui o padding dentro das dimensões */
+}
+
+#projects .projects {
+  display: inline-block; /* Garante que os itens sejam exibidos em linha */
+  width: 120px; /* Largura fixa para cada item */
+  height: 120px; /* Altura fixa para cada item */
+  margin: 10px; /* Espaçamento entre os itens */
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  text-align: center;
+  line-height: 150px; /* Centraliza verticalmente o texto */
+  font-size: 18px;
+  border-radius: 8px;
+}
+  #comunity h1 {
+    color:#A8DFF4;
+  }
+  
+  #create {
+    transition:0.4s;
+    position:fixed;
+    right:0;
+    right:20px;
+    bottom:0;
+    bottom:20px;
+    background-color:#FFAB08;
+    height:80px;
+    width:80px;
+    border:none;
+    color:white;
+    font-size:50px;
+    border-radius:15px;
+  }
+  #create:hover {
+    filter: brightness(1.1);
+  }
+  #createBG {
+    transition:0.2s;
+  display: none; /* Ativa o flexbox */
+  
+ opacity:0;
+  justify-content: center; /* Centraliza horizontalmente */
+  align-items: center; /* Centraliza verticalmente */
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  position: fixed; /* Para que cubra toda a tela */
+  top: 0;
+  left: 0;
+  z-index: 1000; /* Certifique-se de que ele fique acima de outros elementos */
+}
+
+#createDiv {
+  background-color: #005B77;
+  
+  width: 300px;
+  height: 300px;
+  border-radius: 10px;
+  color: white;
+  display: flex; /* Flexbox para alinhar conteúdo dentro */
+  flex-direction: column;
+  justify-content: center; /* Centraliza o conteúdo verticalmente */
+  align-items: center; /* Centraliza o conteúdo horizontalmente */
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+  #createDiv input {
+    border:none;
+    outline:none;
+    color:white;
+    border-radius:10px;
+    text-decoration:underline;
+    background-color:#A8DFF4;
+  }
+  #createDiv input::placeholder {
+    color:white;
+  }
+  #createDiv .button {
+    display: flex; /* Ativa o layout flex */
+    flex-direction: row; /* Garante que os itens fiquem em linha */
+    justify-content: center; /* Centraliza horizontalmente (opcional) */
+    align-items: center; /* Centraliza verticalmente (opcional) */
+    gap: 0px; /* Adiciona espaçamento entre os botões */
+    margin-top: 0px; /* Adiciona espaço acima */
+}
+#createDiv img {
+  filter: invert(1);
+}
+#createDiv #rotate {
+  
+    display: flex; /* Ativa o layout flex */
+    flex-direction: row; /* Garante que os itens fiquem em linha */
+    justify-content: center; /* Centraliza horizontalmente (opcional) */
+    align-items: center; /* Centraliza verticalmente (opcional) */
+    gap: 0px; /* Adiciona espaçamento entre os botões */
+    margin-top: 3px; /* Adiciona espaço acima */
+}
+
+  #CreateButton {
+    transition:0.2s;
+    border:none;
+    color:white;
+    background-color: #FFAB08;
+    width:200px;
+    height:50px;
+    
+    border-bottom-right-radius: 15px;
+border-top-right-radius:15px;
+  }
+  #X {
+    border:none;
+  
+  background-color: #C98506;
+  width: 20px;
+  height: 50px;
+  border-bottom-left-radius: 15px;
+  border-top-left-radius: 15px;
+  margin-left:;
+  border-right: 3px solid #AA7005;
+}
+#createDiv .button button:hover {
+  filter: brightness(0.9);
+}
+
+#termsMenu #termsofuse {
+  color:#E68B00;
+  text-decoration: underline;
+  text-decoration-color: #E68B00;
+}
+#termsMenu #termsok {
+  color:#A8DFF4;
+  border:transparent;
+  background:transparent;
+  font-weight: bold;
+  position:relative;
+  left:15%;
+  top:20%;
+  text-align: right;
+  width:6px;
+  height:20px;
+  display:normal;
+  text-align: right;
+  font-size:15px;
+}
+#TermsBG {
+  transition: 0.2s;
+    opacity:0;
+  display: none; /* Ativa o flexbox */
+  justify-content: center; /* Centraliza horizontalmente */
+  align-items: center; /* Centraliza verticalmente */
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  position: fixed; /* Para que cubra toda a tela */
+  top: 0;
+  left: 0;
+  z-index: 1000; /* Certifique-se de que ele fique acima de outros elementos */
+}
+
+#termsMenu {
+    transition: 0.2s;
+  background-color: #444;
+  width: 300px;
+  height: 300px;
+  border-radius: 3px;
+  color: white;
+  display: normal; /* Flexbox para alinhar conteúdo dentro */
+  flex-direction: column;
+  justify-content: center; /* Centraliza o conteúdo verticalmente */
+  align-items: center; /* Centraliza o conteúdo horizontalmente */
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  font-size: 20px;
+  
+}
+#termsMenu button {
+  text-align: right;
+}
+
+#beta {
+  display: none;
+}
+</style>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCUrA6RDOy27mAeagvRSWoNjYbKkHX15lA",
+      authDomain: "testeccdode.firebaseapp.com",
+      databaseURL: "https://testeccdode-default-rtdb.firebaseio.com",
+      projectId: "testeccdode",
+      storageBucket: "testeccdode.firebasestorage.app",
+      messagingSenderId: "461719826236",
+      appId: "1:461719826236:web:6addc4561470eec8b63839",
+      measurementId: "G-JCD2EL4MTM"
+    };
+
+    const app = initializeApp(firebaseConfig);
+
+    const auth = getAuth(app);
+    
+    function checkAuthState() {
+      const loginButton = document.querySelector("#menu button[onclick*='login.html']");
+      const logoutButton = document.querySelector("#menu button[onclick*='signOutUser()']");
+
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          // Usuário logado: esconde botão de login e mostra o de logout
+          if (loginButton) loginButton.style.display = "none";
+          if (logoutButton) logoutButton.style.display = "block";
+        } else {
+          // Usuário não logado: mostra botão de login e esconde o de logout
+          if (loginButton) loginButton.style.display = "block";
+          if (logoutButton) logoutButton.style.display = "none";
+        }
+      });
+    }
+      // Função para realizar logout
+  // Função para realizar logout
+window.signOutUser = async function() {
+  try {
+    await signOut(auth);
+    alert("Você saiu da sua conta com sucesso!");
+    // Redireciona para a página de login após logout
+    window.location.href = "login.html";
+  } catch (error) {
+    alert("Erro ao sair da conta: " + error.message);
+  }
+};
+    window.onload = function() {
+      checkAuthState();
+
+};
+</script>

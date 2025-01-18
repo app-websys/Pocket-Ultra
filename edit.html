@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editor</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      
+      color:white;
+  background: linear-gradient(to bottom,#00475E,#002B3B);
+  
+  width: 96vw; /* Toda a largura da viewport */
+  height: 99vh; /* Toda a altura da viewport */
+  transition:0.5s;
+    }
+    body input {
+      background-color: rgba(0, 0, 0, 0.5);
+border-color:rgba(0, 0, 0, 0.5);
+color:white;
+width:94%;
+    }
+    body textarea {
+      background-color: rgba(0,0,0,0.5);
+      border-color:rgba(0,0,0,0.5);
+      color:white;
+      width:94%;
+    }
+    input, textarea {
+      display: block;
+      margin: 10px 0;
+      width: 20%; 
+      padding: 5px; 
+    }
+    button { 
+      transition:1s;
+      padding: 10px 20px; 
+      cursor: pointer;
+      background: #28a745; 
+      color: white;
+      border: none; 
+      border-radius:5px;
+    }
+    #gerar-apk { 
+      padding: 10px 20px; 
+      cursor: pointer;
+      background: #28a745; 
+      color: white;
+      border: none; 
+      border-radius:5px;
+    }
+    button:hover { 
+      background: #218838;
+    }
+    img { margin: 10px 0; 
+    max-width: 100%;
+    max-height: 150px; 
+    }
+    
+   #saved {
+     transition:1s;
+     background-color: rgba(0,255,0,0.5);
+     border: 2px solid green;
+     color:white;
+     width:150px;
+     height:30px;
+     text-align: center;
+     position:fixed;
+    left:37%;
+    bottom:5%;
+    opacity:0;
+   }
+   #saved p {
+    
+     position:relative;
+    top:10px;
+   }
+   #ProjectName {
+     text-align: center;
+   }
+   #upload {
+      display:none;
+      
+    }
+    
+  </style>
+</head>
+<body>
+  <h1 id="ProjectName"></h1>
+  <div id="content">
+    <img id="imagePreview"/>
+  <input id="blockName" placeholder="Nome do bloco" />
+  <textarea id="blockCode" rows="10" placeholder="Code"></textarea>
+  <label>Carregar imagem:</label>
+  <input id="blockImageUpload" type="file" accept="image/png" />
+  <label>Ou insira uma URL:</label>
+  <input id="blockImage" placeholder="URL ou Base64 da imagem" />
+  
+<script>
+  function gerarJSON() {
+    // Pega os valores dos inputs
+    const titulo = document.getElementById('blockName').value || 'sem-titulo';
+    const conteudo = document.getElementById('blockCode').value || 'sem-conteudo';
+
+    // Cria o objeto JSON
+    const jsonData = {
+      titulo: titulo,
+      conteudo: conteudo,
+    };
+
+    // Converte para string JSON
+    const jsonString = JSON.stringify(jsonData, null, 2);
+
+    // Cria um Blob com o conteúdo do JSON
+    const blob = new Blob([jsonString], { type: 'application/json' });
+
+    // Gera uma URL temporária para o arquivo
+    const fileURL = URL.createObjectURL(blob);
+
+    // Define o atributo href do <a> para abrir a nova aba
+    const link = document.getElementById('gerar-apk');
+    link.href = fileURL;
+  // Abre no navegador
+    link.download = `${titulo}.json`; // Nome do arquivo para download opcional
+  }
+</script>
+  <div id="upload">
+  
+  <label for="projectDesc">Description:</label>
+  <textarea id="projectDesc" placeholder="Description..." required></textarea>
+  <label for="projectVersion">Versão:</label>
+  <input type="text" id="projectVersion" placeholder="Digite a versão (ex: 1.0.0)" required>
+
+  <button type="button" class="button" id="saveProjectButton">Salvar Projeto</button>
+  </form>
+</div>
+
+  <button id="saveBlock">Salvar</button>
+  <button id="uploadButton" onClick="upload()">upload to UltraWeb</button>
+
+
+<a id="gerar-apk" href="#" onclick="gerarJSON()" style="display:none;">Exportar JSON</a>
+
+   <p id='saved'>Project saved!</p>
+  </div>
+  </div>
+  <script name="load block/load image">
+    const params = new URLSearchParams(window.location.search);
+    const blockIndex = params.get('index');
+    const blockNameInput = document.getElementById('blockName');
+    const blockCodeInput = document.getElementById('blockCode');
+    const blockImageInput = document.getElementById('blockImage');
+    const blockImageUpload = document.getElementById('blockImageUpload');
+    const imagePreview = document.getElementById('imagePreview');
+    const saveBlockButton = document.getElementById('saveBlock');
+
+    // Carrega o bloco atual para edição
+    const blocks = JSON.parse(localStorage.getItem('blocks')) || [];
+    const currentBlock = blocks[blockIndex];
+
+    if (currentBlock) {
+      blockNameInput.value = currentBlock.name;
+      blockCodeInput.value = currentBlock.code;
+      blockImageInput.value = currentBlock.image || '';
+      imagePreview.src = currentBlock.image || '';
+      let projectTextName = document.getElementById("ProjectName")
+      if (projectTextName) {
+        projectTextName.textContent = blockNameInput.value;
+      }
+    } else {
+      let projectTextName = document.getElementById("ProjectName")
+      if (projectTextName) {
+        projectTextName.textContent = "Any project selected";
+        
+        projectTextName.style.left = "25%";
+        projectTextName.style.textalign = "center";
+      }
+    }
+
+    // Atualiza o preview da imagem (URL ou Base64)
+    blockImageInput.oninput = () => {
+      imagePreview.src = blockImageInput.value;
+    };
+
+    // Converte uma imagem carregada para Base64
+    blockImageUpload.onchange = (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          blockImageInput.value = e.target.result; // Base64 gerado
+          imagePreview.src = e.target.result;
+        };
+        reader.readAsDataURL(file); // Converte para Base64
+      }
+    };
+
+    // Salva as alterações no bloco
+    saveBlockButton.onclick = () => {
+      blocks[blockIndex] = {
+        name: blockNameInput.value,
+        code: blockCodeInput.value,
+        image: blockImageInput.value
+      };
+      setTimeout(() => {
+      document.getElementById('saved').style.opacity = 1;
+      },200);
+      localStorage.setItem('blocks', JSON.stringify(blocks));
+      
+      setTimeout(() => {
+      document.getElementById('saved').style.opacity = 0;
+      setInterval(() =>{
+        window.location.href = 'home.html';
+      },100);
+      },2000);
+      
+    };
+    
+ function upload() {
+  const uploadElement = document.getElementById('upload');
+
+  // Altera o estilo para exibir a div
+  uploadElement.style.opacity = 0; // Inicia com opacidade 0
+  uploadElement.style.display = "block"; // Exibe a div
+  uploadElement.style.transition = "opacity 0.5s"; // Transição suave
+
+  // Aumenta a opacidade com um pequeno delay para ativar a transição
+  setTimeout(() => {
+    uploadElement.style.opacity = 1;
+  }, 10); // Delay mínimo para acionar a transição
+}
+  </script>
+  
+</body>
+<style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    input, textarea { display: block; width: 100%; margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+    .button { padding: 10px 20px; background-color: #5865F2; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    .button:hover { background-color: #4752c4; }
+    h1 { text-align: center; }
+    
+  </style>
+</head>
+<body>
+  
+  <script type="module">
+    // Importação dos módulos Firebase necessários
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-database.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-auth.js";
+
+    // Configuração do Firebase
+    const firebaseConfig = {
+    apiKey: "AIzaSyCUrA6RDOy27mAeagvRSWoNjYbKkHX15lA",
+    authDomain: "testeccdode.firebaseapp.com",
+    databaseURL: "https://testeccdode-default-rtdb.firebaseio.com",
+    projectId: "testeccdode",
+    storageBucket: "testeccdode.firebasestorage.app",
+    messagingSenderId: "461719826236",
+    appId: "1:461719826236:web:6addc4561470eec8b63839",
+    measurementId: "G-JCD2EL4MTM"
+  };
+
+    // Inicializar Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const auth = getAuth(app);
+
+    // Função para adicionar um projeto
+    document.getElementById('saveProjectButton').addEventListener('click', addProject);
+
+    function addProject() {
+      const projectImage = document.getElementById('blockImage').value;
+      const projectName = document.getElementById("blockName").value;
+      const projectDesc = document.getElementById('projectDesc').value;
+      const projectScript = document.getElementById("blockCode").value;
+      const projectVersion = document.getElementById("projectVersion").value;
+
+      // Verifica se o usuário está autenticado
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          const userId = user.uid;
+          const projectRef = ref(database, `projects/${userId}`+projectName); // Correção no caminho
+
+          const projectData = {
+            
+            image: projectImage,
+            name: projectName,
+            desc: projectDesc,
+            script: projectScript,
+            version: projectVersion,
+            creator: userId,
+            createdAt: new Date().toISOString(),
+            dowloads: 0
+          };
+
+          set(projectRef, projectData)
+            .then(() => {
+              alert("project upload enter in UltraWeb to see");
+               // Limpa o formulário
+               document.getElementById('upload').style.display = "none";
+            })
+            .catch((error) => {
+              console.error("ERROR:", error);
+              alert("Erro to save the project,try again.");
+            });
+        } else {
+          alert("you need to be looged to upload a project!.");
+          window.location.href = "login.html"; // Redireciona para o login
+        }
+      });
+    }
+  </script>
+  
+</body>
+</html>
